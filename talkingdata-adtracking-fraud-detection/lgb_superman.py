@@ -1,16 +1,4 @@
-'''
-Latest version improvement
-*PrevClick time added. there are lot of combination but only important combinations are added after checking.
-*Some new uniquecount features are added.
-'''
-"""
-If you find this kernel helpful please upvote. Also any suggestion for improvement will be warmly welcomed.
-I made cosmetic changes in the [code](https://www.kaggle.com/aharless/kaggle-runnable-version-of-baris-kanber-s-lightgbm/code). 
-Added some new features. Ran for 25mil chunk rows.
-Also taken ideas from various public kernels.
-"""
 
-#FILENO= 6 #To distinguish the output file name.
 debug=0  #Whethere or not in debuging mode
 import pandas as pd
 import time
@@ -70,16 +58,9 @@ def do_prev_Click( df,agg_suffix='prevClick', agg_type='float32'):
     
     GROUP_BY_NEXT_CLICKS = [
     
-    # V1
-    # {'groupby': ['ip']},
-    # {'groupby': ['ip', 'app']},
     {'groupby': ['ip', 'channel']},
     {'groupby': ['ip', 'os']},
     
-    # V3
-    #{'groupby': ['ip', 'app', 'device', 'os', 'channel']},
-    #{'groupby': ['ip', 'os', 'device']},
-    #{'groupby': ['ip', 'os', 'device', 'app']}
     ]
 
     # Calculate the time to next click for each group
@@ -115,7 +96,6 @@ def do_count( df, group_cols, agg_type='uint32', show_max=False, show_agg=True )
         print( agg_name + " max value = ", df[agg_name].max() )
     df[agg_name] = df[agg_name].astype(agg_type)
     predictors.append(agg_name)
-#     print('predictors',predictors)
     gc.collect()
     return( df )
     
@@ -161,7 +141,6 @@ def do_mean( df, group_cols, counted, agg_type='float32', show_max=False, show_a
         print( agg_name + " max value = ", df[agg_name].max() )
     df[agg_name] = df[agg_name].astype(agg_type)
     predictors.append(agg_name)
-#     print('predictors',predictors)
     gc.collect()
     return( df )
 
@@ -186,27 +165,6 @@ if debug:
 
 def lgb_modelfit_nocv(params, dtrain, dvalid, predictors, target='target', objective='binary', metrics='auc',
                  feval=None, early_stopping_rounds=50, num_boost_round=3000, verbose_eval=10, categorical_features=None):
-#    lgb_params = {
-#        'boosting_type': 'gbdt',
-#        'objective': objective,
-#        'metric':metrics,
-#        'learning_rate': 0.05,
-#        #'is_unbalance': 'true',  #because training data is unbalance (replaced with scale_pos_weight)
-#        'num_leaves': 31,  # we should let it be smaller than 2^(max_depth)
-#        'max_depth': -1,  # -1 means no limit
-#        'min_child_samples': 20,  # Minimum number of data need in a child(min_data_in_leaf)
-#        'max_bin': 255,  # Number of bucketed bin for feature values
-#        'subsample': 0.6,  # Subsample ratio of the training instance.
-#        'subsample_freq': 0,  # frequence of subsample, <=0 means no enable
-#        'colsample_bytree': 0.3,  # Subsample ratio of columns when constructing each tree.
-#        'min_child_weight': 5,  # Minimum sum of instance weight(hessian) needed in a child(leaf)
-#        'subsample_for_bin': 200000,  # Number of samples for constructing bin
-#        'min_split_gain': 0,  # lambda_l1, lambda_l2 and min_gain_to_split to regularization
-#        'reg_alpha': 0,  # L1 regularization term on weights
-#        'reg_lambda': 0,  # L2 regularization term on weights
-#        'nthread': 8,
-#        'verbose': 0,
-#    }
     
     lgb_params = {
         'boosting_type': 'gbdt',
@@ -336,17 +294,6 @@ def DO(skip_rows,random_seed):
 
     test_df = train_df[len_train:]
     
-#    np.random.seed(random_seed)
-#    val_idx = np.random.choice(train_df.index[:len_train].values, size=val_size, replace=False)
-#    val_df = train_df.iloc[val_idx]
-#    train_idx = np.setdiff1d(train_df.index[:len_train].values, val_idx)
-#    train_df = train_df.iloc[train_idx]
-    
-#    val_df = train_df[(len_train-val_size):len_train]
-#    train_df = train_df[:(len_train-val_size)]
-    
-#    val_df = train_df.iloc[:36476425]
-#    train_df = train_df.iloc[36476425:]
        
     np.random.seed(random_seed)
     if debug:
@@ -358,11 +305,6 @@ def DO(skip_rows,random_seed):
     train_idx = np.setdiff1d(np.arange(len_train), val_idx)
     train_df = train_df.iloc[train_idx]
     
-    #val_idx = np.random.choice(np.arange(36476425,73646485), size=37170060//2, replace=False)
-#    val_idx = np.random.choice(np.arange(len_train), size=5000000, replace=False)
-#    val_df = train_df.iloc[val_idx]
-#    train_idx = np.setdiff1d(np.arange(len_train), val_idx)
-#    train_df = train_df.iloc[train_idx]
 
     print("\ntrain size: ", len(train_df))
     print("\nvalid size: ", len(val_df))
@@ -375,37 +317,12 @@ def DO(skip_rows,random_seed):
 
     print("Training...")
     start_time = time.time()
-
-#    params = {
-#        'learning_rate': 0.05,
-#        #'is_unbalance': 'true', # replaced with scale_pos_weight argument
-#        'num_leaves': 7,  # 2^max_depth - 1
-#        'max_depth': 3,  # -1 means no limit
-#        'min_child_samples': 100,  # Minimum number of data need in a child(min_data_in_leaf)
-#        'max_bin': 100,  # Number of bucketed bin for feature values
-#        'subsample': 0.7,  # Subsample ratio of the training instance.
-#        'subsample_freq': 1,  # frequence of subsample, <=0 means no enable
-#        'colsample_bytree': 0.9,  # Subsample ratio of columns when constructing each tree.
-#        'min_child_weight': 0,  # Minimum sum of instance weight(hessian) needed in a child(leaf)
-#        'scale_pos_weight':200 # because training data is extremely unbalanced 
-#    }
-#    (bst,best_iteration) = lgb_modelfit_nocv(params, 
-#                            train_df, 
-#                            val_df, 
-#                            predictors, 
-#                            target, 
-#                            objective='binary', 
-#                            metrics='auc',
-#                            early_stopping_rounds=50, 
-#                            verbose_eval=True, 
-#                            num_boost_round=3000, 
-#                            categorical_features=categorical)
     
     params = {
-        'learning_rate': 0.005,
+        'learning_rate': 0.01,
         #'is_unbalance': 'true', # replaced with scale_pos_weight argument
-        'num_leaves': 14,  # 2^max_depth - 1
-        'max_depth': 4,  # -1 means no limit
+        'num_leaves': 31,  # 2^max_depth - 1
+        'max_depth': -1,  # -1 means no limit
         'min_child_samples': 100,  # Minimum number of data need in a child(min_data_in_leaf)
         'max_bin': 512,  # Number of bucketed bin for feature values
         'subsample': 0.8,  # Subsample ratio of the training instance.
@@ -421,9 +338,9 @@ def DO(skip_rows,random_seed):
                             target, 
                             objective='xentropy', 
                             metrics='auc',
-                            early_stopping_rounds=300, 
+                            early_stopping_rounds=100, 
                             verbose_eval=True, 
-                            num_boost_round=30000, 
+                            num_boost_round=10000, 
                             categorical_features=categorical)
 
     print('[{}]: model training time'.format(time.time() - start_time))
@@ -431,19 +348,13 @@ def DO(skip_rows,random_seed):
     del val_df
     gc.collect()
 
-    # ax = lgb.plot_importance(bst, max_num_features=300)
-    
-    # plt.savefig('test_{:%m%d_%H%M%S}.png'.format(datetime.datetime.now()), dpi=600, bbox_inches='tight')
-    # plt.show()
 
     print("Predicting...")
     sub['is_attributed'] = bst.predict(test_df[predictors],num_iteration=best_iteration)
-#     if not debug:
-#         print("writing...")
+
     print(sub.head())
     sub = sub.merge(id_map, how='right', on='old_click_id')
     sub.drop('old_click_id',axis=1,inplace=True)
-    #sub.to_csv('sub_it%d.csv'%(fileno),index=False,float_format='%.9f')
     sub[['click_id','is_attributed']].to_csv('sub_{:%m%d_%H%M%S}.csv'.format(datetime.datetime.now()),index=False,float_format='%.9f')
     print("done...")
     return sub
@@ -452,21 +363,14 @@ def DO(skip_rows,random_seed):
 ####### Chunk size defining and final run  ############
 
 nrows=184903891-1
-#nchunk=25000000
-#val_size=2500000
-#
-#frm=nrows-65000000
+
 
 nchunk=37170060
 val_size=2500000
 
 read_rows = np.array([0]+list(range(21878213,181878213)))
 skip_rows = np.setdiff1d(np.arange(184903891), read_rows)
-#skip_rows = np.arange(1,131886954)
 
-#read_rows = np.append(np.array([0]) , \
-#            np.random.choice(np.arange(1,184903891), size=50000000, replace=False))
-#skip_rows = np.setdiff1d(np.arange(184903891), read_rows)
 
-sub=DO(skip_rows=skip_rows,random_seed = 19891106)
+sub=DO(skip_rows=skip_rows,random_seed = 42)
 
