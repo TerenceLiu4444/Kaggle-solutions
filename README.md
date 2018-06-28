@@ -8,3 +8,5 @@ talkingdata-adtracking-fraud-detection: classification problem with time series.
 google-landmark-recognition-challenge: classification problem with image. I got silver medal (top 6%) using ResNet50 and code from google-landmark-retrieval-challenge.
 
 google-landmark-retrieval-challenge: image retrieval problem in computer vision. I got bronze medal (48/218) using DEep Local Features (DELF) for feature extraction and Faiss (a library developed by Facebook AI Research) for efficient similarity search.
+
+avito-demand-prediction: regression problem with all-in-one features, including text, image, numerical, and categorical features. I got silver medal (top 5%) using light GBM with several engineered features on text, image, and categorical aggregation.
