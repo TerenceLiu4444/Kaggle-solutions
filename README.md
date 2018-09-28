@@ -1,6 +1,8 @@
 # Kaggle-solutions
 my solutions to the kaggle competition I have attended
 
+the-2nd-youtube-8m-video-understanding-challenge: computer vision project, I got gold medal using tensorflow models.
+
 2018-data-science-bowl: computer vision project, I got silver medal (top 3%) using Mask-RCNN.
 
 talkingdata-adtracking-fraud-detection: classification problem with time series. I got silver medal (top 2%) using light GBM.
