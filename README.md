@@ -1,7 +1,7 @@
 # Kaggle-solutions
 my solutions to the kaggle competition I have attended
 
-the-2nd-youtube-8m-video-understanding-challenge: computer vision project, I got gold medal using tensorflow models.
+the-2nd-youtube-8m-video-understanding-challenge: computer vision project, I got gold medal using tensorflow models. Code available at https://github.com/boliu61/youtube-8m, Paper accepted by ECCV18 Youtube-8M Workshop available at: https://arxiv.org/abs/1808.06739
 
 2018-data-science-bowl: computer vision project, I got silver medal (top 3%) using Mask-RCNN.
 
